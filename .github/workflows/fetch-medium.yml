@@ -23,18 +23,42 @@ jobs:
             -H "User-Agent: Mozilla/5.0" > feed.xml
 
           python3 - <<'EOF'
-          import xml.etree.ElementTree as ET
+          import xml.etree.ElementTree as ET, json, re
 
           tree = ET.parse('feed.xml')
           root = tree.getroot()
+          ns = {'content': 'http://purl.org/rss/1.0/modules/content/'}
+          items = []
 
-          # print raw XML of first item so we can see the structure
-          first = root.find('./channel/item')
-          if first is not None:
-              for child in first:
-                  print(f"TAG: {child.tag}")
-                  print(f"TEXT: {child.text[:300] if child.text else 'None'}")
-                  print("---")
+          for item in root.findall('./channel/item'):
+            title = item.findtext('title', '')
+            link  = item.findtext('link', '')
+            date  = item.findtext('pubDate', '')
+            cats  = [c.text for c in item.findall('category') if c.text]
+            body  = item.find('content:encoded', ns)
+            html  = body.text if body is not None else ''
+
+            # grab subtitle from first <h4> tag
+            h4 = re.search(r'<h4[^>]*>(.*?)</h4>', html)
+            desc = re.sub('<[^>]+>', '', h4.group(1)).strip() if h4 else ''
+
+            # fallback to first <p> if no h4
+            if not desc:
+              p = re.search(r'<p[^>]*>(.*?)</p>', html)
+              desc = re.sub('<[^>]+>', '', p.group(1)).strip() if p else ''
+
+            # grab first image as thumbnail
+            thumb = ''
+            m = re.search(r'<img[^>]+src="([^"]+)"', html)
+            if m: thumb = m.group(1)
+
+            items.append({
+              'title': title, 'url': link, 'date': date,
+              'description': desc, 'thumbnail': thumb, 'tags': cats[:4]
+            })
+
+          with open('medium.json', 'w') as f:
+            json.dump(items, f, indent=2)
           EOF
 
       - name: Commit medium.json
