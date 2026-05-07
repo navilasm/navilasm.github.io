@@ -2,14 +2,16 @@ name: Fetch Medium articles
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # runs daily at 6am UTC
-  workflow_dispatch:        # lets you trigger it manually too
+    - cron: '0 6 * * *'
+  workflow_dispatch:
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fetch Medium RSS and convert to JSON
         run: |
@@ -51,6 +53,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git add medium.json
           git diff --cached --quiet || git commit -m "chore: refresh Medium articles"
           git push
