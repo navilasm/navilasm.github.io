@@ -8,6 +8,8 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: write
     steps:
@@ -40,7 +42,13 @@ jobs:
             if m: thumb = m.group(1)
             desc_tag = item.find('description')
             desc_html = desc_tag.text if desc_tag is not None else ''
-            desc = re.sub('<[^>]+>', '', desc_html)[:160] + '…'
+            desc_clean = re.sub('<[^>]+>', '', desc_html).strip()
+            sentences = [s.strip() for s in desc_clean.split('.') if s.strip()]
+            if sentences and sentences[0].lower() in title.lower():
+                sentences = sentences[1:]
+            desc = '. '.join(sentences[:2]).strip()
+            if not desc:
+                desc_clean[:160] + '…'
 
             items.append({
               'title': title, 'url': link, 'date': date,
