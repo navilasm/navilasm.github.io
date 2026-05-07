@@ -1,0 +1,56 @@
+name: Fetch Medium articles
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # runs daily at 6am UTC
+  workflow_dispatch:        # lets you trigger it manually too
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch Medium RSS and convert to JSON
+        run: |
+          curl -s "https://medium.com/feed/@navilasm" \
+            -H "User-Agent: Mozilla/5.0" > feed.xml
+
+          python3 - <<'EOF'
+          import xml.etree.ElementTree as ET, json, re
+
+          tree = ET.parse('feed.xml')
+          root = tree.getroot()
+          ns = {'content': 'http://purl.org/rss/1.0/modules/content/'}
+          items = []
+
+          for item in root.findall('./channel/item'):
+            title = item.findtext('title', '')
+            link  = item.findtext('link', '')
+            date  = item.findtext('pubDate', '')
+            cats  = [c.text for c in item.findall('category') if c.text]
+            body  = item.find('content:encoded', ns)
+            html  = body.text if body is not None else ''
+            thumb = ''
+            m = re.search(r'<img[^>]+src="([^"]+)"', html)
+            if m: thumb = m.group(1)
+            desc_tag = item.find('description')
+            desc_html = desc_tag.text if desc_tag is not None else ''
+            desc = re.sub('<[^>]+>', '', desc_html)[:160] + '…'
+
+            items.append({
+              'title': title, 'url': link, 'date': date,
+              'description': desc, 'thumbnail': thumb, 'tags': cats[:4]
+            })
+
+          with open('medium.json', 'w') as f:
+            json.dump(items, f)
+          EOF
+
+      - name: Commit medium.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add medium.json
+          git diff --cached --quiet || git commit -m "chore: refresh Medium articles"
+          git push
