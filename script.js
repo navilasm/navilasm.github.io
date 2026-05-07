@@ -106,29 +106,13 @@ async function fetchGithub() {
 }
 
 /* ─────────────────────────────────────────────
-    FETCH MEDIUM ARTICLES (via RSS2JSON)
+    FETCH MEDIUM ARTICLES (via workflows)
 ───────────────────────────────────────────── */
 async function fetchMedium() {
   try {
-    const rss = `https://medium.com/feed/${CONFIG.mediumUsername}`;
-    const api = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}&count=12`;
-    const res = await fetch(api);
-    const data = await res.json();
-    if (data.status !== 'ok') return [];
-
-    return data.items.map(item => {
-      const thumb = item.thumbnail || item.enclosure?.link || null;
-      const tags = item.categories || [];
-      return {
-        source: 'medium',
-        title: item.title,
-        description: stripHtml(item.description).slice(0, 160) + '…',
-        url: item.link,
-        date: item.pubDate,
-        thumbnail: thumb,
-        tags: tags.slice(0, 4),
-      };
-    });
+    const res = await fetch('./medium.json');
+    const items = await res.json();
+    return items.map(item => ({ source: 'medium', ...item }));
   } catch (e) {
     console.error('Medium fetch failed', e);
     return [];
