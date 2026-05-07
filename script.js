@@ -27,6 +27,14 @@ const CONFIG = {
       tags: ['Labor', 'Unemployment Rate'],
       date: 'Mar 26, 2026',
     },
+   {
+      title: 'Too Poor to Be Unemployed: Indonesia’s Labor Situation',
+      url: 'https://public.tableau.com/views/TooPoortoBeUnemployedIndonesiasLaborSituation/Dashboard',
+      description: 'Too Poor to Be Unemployed: Indonesia’s Labor Situation #StorytellingWithData',
+      thumbnail: 'https://public.tableau.com/static/images/La/TooPoortoBeUnemployedIndonesiasLaborSituation/Dashboard/1_rss.png',
+      tags: ['Labor', 'Unemployment Rate', 'Informal Employment'],
+      date: 'Jan 1, 2026',
+    },
     {
       title: 'Educational Disparities in Indonesia',
       url: 'https://public.tableau.com/views/EducationalDisparitiesinIndonesia/Dashboard',
