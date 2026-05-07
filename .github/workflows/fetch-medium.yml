@@ -23,40 +23,18 @@ jobs:
             -H "User-Agent: Mozilla/5.0" > feed.xml
 
           python3 - <<'EOF'
-          import xml.etree.ElementTree as ET, json, re
+          import xml.etree.ElementTree as ET
 
           tree = ET.parse('feed.xml')
           root = tree.getroot()
-          ns = {'content': 'http://purl.org/rss/1.0/modules/content/'}
-          items = []
 
-          for item in root.findall('./channel/item'):
-            title = item.findtext('title', '')
-            link  = item.findtext('link', '')
-            date  = item.findtext('pubDate', '')
-            cats  = [c.text for c in item.findall('category') if c.text]
-            body  = item.find('content:encoded', ns)
-            html  = body.text if body is not None else ''
-            thumb = ''
-            m = re.search(r'<img[^>]+src="([^"]+)"', html)
-            if m: thumb = m.group(1)
-            desc_tag = item.find('description')
-            desc_html = desc_tag.text if desc_tag is not None else ''
-            desc_clean = re.sub('<[^>]+>', '', desc_html).strip()
-            sentences = [s.strip() for s in desc_clean.split('.') if s.strip()]
-            if sentences and sentences[0].lower() in title.lower():
-                sentences = sentences[1:]
-            desc = '. '.join(sentences[:2]).strip()
-            if not desc:
-                desc_clean[:160] + '…'
-
-            items.append({
-              'title': title, 'url': link, 'date': date,
-              'description': desc, 'thumbnail': thumb, 'tags': cats[:4]
-            })
-
-          with open('medium.json', 'w') as f:
-            json.dump(items, f)
+          # print raw XML of first item so we can see the structure
+          first = root.find('./channel/item')
+          if first is not None:
+              for child in first:
+                  print(f"TAG: {child.tag}")
+                  print(f"TEXT: {child.text[:300] if child.text else 'None'}")
+                  print("---")
           EOF
 
       - name: Commit medium.json
