@@ -1,0 +1,461 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #fcfcfc;
+    --surface: #ffffff;
+    --text: #1a1a18;
+    --muted: #6b6b67;
+    --border: rgba(26, 26, 24, 0.1);
+    --border-hover: rgba(26, 26, 24, 0.22);
+    --accent-medium: #c17d3a;
+    --accent-github: #2d6a4f;
+    --accent-tableau: #2563a8;
+    --tag-bg: rgba(26, 26, 24, 0.05);
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* ── NAV ── */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* logo left, nav-right pushed to right */
+    padding: 1.4rem 3rem;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-logo {
+    font-family: 'Lora', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--text);
+}
+
+.pin-badge {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--text);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+.pin-badge svg {
+    width: 13px;
+    height: 13px;
+}
+
+.card:hover .pin-badge {
+    opacity: 0;
+}
+
+/* arrow takes over on hover */
+
+/* ── HERO ── */
+.hero {
+    text-align: center;
+    padding: 5rem 2rem 3.5rem;
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+}
+
+/* ── FILTER BAR ── */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.5rem 2rem 2.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.45rem 1.1rem;
+    border-radius: 999px;
+    border: 0.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.02em;
+}
+
+.filter-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+}
+
+.filter-btn.active {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+}
+
+.filter-btn.active[data-filter="medium"] {
+    background: var(--accent-medium);
+    border-color: var(--accent-medium);
+}
+
+.filter-btn.active[data-filter="github"] {
+    background: var(--accent-github);
+    border-color: var(--accent-github);
+}
+
+.filter-btn.active[data-filter="tableau"] {
+    background: var(--accent-tableau);
+    border-color: var(--accent-tableau);
+}
+
+/* ── GRID ── */
+.grid-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 5rem;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ── CARD ── */
+.card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+}
+
+.card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+}
+
+.card-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    background: var(--bg);
+}
+
+.card-thumb-placeholder {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+}
+
+.card-thumb-placeholder svg {
+    opacity: 0.18;
+    width: 48px;
+    height: 48px;
+}
+
+.card-body {
+    padding: 1.2rem 1.4rem 1.4rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.source-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+}
+
+.source-pill.medium {
+    background: #fff1e5;
+    color: #8a4a10;
+}
+
+.source-pill.github {
+    background: #e6f4ef;
+    color: #145232;
+}
+
+.source-pill.tableau {
+    background: #e8f0fb;
+    color: #113f7a;
+}
+
+.source-pill svg {
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+}
+
+.card-date {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.card-title {
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+}
+
+.card-desc {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+    flex: 1;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+}
+
+.tag {
+    font-size: 0.7rem;
+    padding: 0.22rem 0.6rem;
+    background: var(--tag-bg);
+    border-radius: 999px;
+    color: var(--muted);
+}
+
+.card-arrow {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 0.5px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.card:hover .card-arrow {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card-arrow svg {
+    width: 13px;
+    height: 13px;
+}
+
+/* ── LOADING STATE ── */
+.loading-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.skeleton {
+    background: linear-gradient(90deg, var(--bg) 25%, rgba(26, 26, 24, 0.06) 50%, var(--bg) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 6px;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    color: var(--muted);
+}
+
+/* ── FOOTER ── */
+footer {
+    border-top: 0.5px solid var(--border);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+footer a {
+    color: var(--muted);
+    text-decoration: underline;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+    nav {
+        padding: 1.1rem 1.25rem;
+    }
+
+    .hero {
+        padding: 3rem 1.25rem 2.5rem;
+    }
+
+    .grid-wrapper {
+        padding: 0 1.25rem 4rem;
+    }
+
+    .posts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* dark mode variables */
+body.dark {
+    --bg: #111110;
+    --surface: #1c1c1a;
+    --text: #f0ede8;
+    --muted: #8a8a85;
+    --border: rgba(240, 237, 232, 0.1);
+    --border-hover: rgba(240, 237, 232, 0.22);
+    --tag-bg: rgba(240, 237, 232, 0.07);
+}
+
+.theme-toggle {
+    background: transparent;
+    border: 0.5px solid var(--border);
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    transition: border-color 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+}
+
+.theme-toggle svg {
+    width: 15px;
+    height: 15px;
+}
+
+body.dark .source-pill.medium {
+    background: #3d2008;
+    color: #f5b97a;
+}
+
+body.dark .source-pill.github {
+    background: #0d2e1e;
+    color: #6fcf97;
+}
+
+body.dark .source-pill.tableau {
+    background: #0d1f3e;
+    color: #7eb3f5;
+}
