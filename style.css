@@ -389,6 +389,30 @@ footer a {
     text-decoration: underline;
 }
 
+.footer-icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+}
+
+.footer-icons a {
+    color: var(--muted);
+    display: flex;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.footer-icons a:hover {
+    color: var(--text);
+    transform: translateY(-2px);
+}
+
+.footer-icons svg {
+    width: 18px;
+    height: 18px;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 640px) {
     nav {
