@@ -19,73 +19,44 @@ jobs:
         run: |
           curl -s "https://medium.com/feed/@navilasm" \
             -H "User-Agent: Mozilla/5.0" > medium_feed.xml
-
-          curl -s "https://navilasm.substack.com/feed" \
-            -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" \
-            -H "Accept: application/rss+xml, application/xml, text/xml" \
-            -H "User-Agent: Mozilla/5.0" > substack_feed.xml
           
           python3 - <<'EOF'
           import xml.etree.ElementTree as ET, json, re
 
-          def parse_feed(filename, source):
-              tree = ET.parse(filename)
-              root = tree.getroot()
-              ns = {'content': 'http://purl.org/rss/1.0/modules/content/'}
-              items = []
-          
-              for item in root.findall('./channel/item'):
-                title = item.findtext('title', '')
-                link  = item.findtext('link', '')
-                date  = item.findtext('pubDate', '')
-                cats  = [c.text for c in item.findall('category') if c.text]
-                body  = item.find('content:encoded', ns)
-                html  = body.text if body is not None else ''
-                thumb = ''
-                m = re.search(r'<img[^>]+src="([^"]+)"', html)
-                if m: thumb = m.group(1)
-                desc_tag = item.find('description')
-                desc_html = desc_tag.text if desc_tag is not None else ''
-                desc_clean = re.sub('<[^>]+>', '', desc_html).strip()
-                sentences = [s.strip() for s in desc_clean.split('.') if s.strip()]
-                if sentences and sentences[0].lower() in title.lower():
-                  sentences = sentences[1:]
-                desc = '. '.join(sentences[:2]).strip()
-                if not desc:
-                  desc = desc_clean[:160] + '…'
-          
-                items.append({
-                  'title': title, 'url': link, 'date': date,
-                  'description': desc, 'thumbnail': thumb,
-                  'tags': cats[:4], 'source': source
-                })
-          
-              return items
-          
-          medium_items = parse_feed('medium_feed.xml', 'medium')
-          all_items = medium_items
-          
-          # deduplicate by title, keep earliest published date
-          seen = {}
-          for item in all_items:
-              key = re.sub(r'[^a-z0-9]', '', item['title'].lower())  # normalize title as key
-              if key not in seen:
-                seen[key] = item
-              else:
-                # keep the one with the earlier date
-                from email.utils import parsedate_to_datetime
-                try:
-                  existing_date = parsedate_to_datetime(seen[key]['date'])
-                  current_date  = parsedate_to_datetime(item['date'])
-                  if current_date < existing_date:
-                    seen[key] = item
-                except Exception:
-                  pass  # if date parsing fails, keep existing
-          
-          deduped = list(seen.values())
+          tree = ET.parse('feed.xml')
+          root = tree.getroot()
+          ns = {'content': 'http://purl.org/rss/1.0/modules/content/'}
+          items = []
+
+          for item in root.findall('./channel/item'):
+            title = item.findtext('title', '')
+            link  = item.findtext('link', '')
+            date  = item.findtext('pubDate', '')
+            cats  = [c.text for c in item.findall('category') if c.text]
+            body  = item.find('content:encoded', ns)
+            html  = body.text if body is not None else ''
+
+            # grab subtitle from first <h4> tag
+            h4 = re.search(r'<h4[^>]*>(.*?)</h4>', html)
+            desc = re.sub('<[^>]+>', '', h4.group(1)).strip() if h4 else ''
+
+            # fallback to first <p> if no h4
+            if not desc:
+              p = re.search(r'<p[^>]*>(.*?)</p>', html)
+              desc = re.sub('<[^>]+>', '', p.group(1)).strip() if p else ''
+
+            # grab first image as thumbnail
+            thumb = ''
+            m = re.search(r'<img[^>]+src="([^"]+)"', html)
+            if m: thumb = m.group(1)
+
+            items.append({
+              'title': title, 'url': link, 'date': date,
+              'description': desc, 'thumbnail': thumb, 'tags': cats[:4]
+            })
 
           with open('medium.json', 'w') as f:
-            json.dump(deduped, f, indent=2)
+            json.dump(items, f, indent=2)
           EOF
 
       - name: Commit medium.json
