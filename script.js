@@ -17,43 +17,6 @@ const CONFIG = {
   //   { source: 'tableau', slug: 'Labor Force in Indonesia' },
   // ],
 
-  /* Tableau vizzes */
-  tableauVizzes: [
-    {
-      title: 'Labor Force in Indonesia',
-      url: 'https://public.tableau.com/views/LaborDashboard_17745147878210/LaborOverview',
-      description: 'Dashboard of Labor Force in Indonesia #PublicPolicyViz',
-      thumbnail: 'https://public.tableau.com/static/images/La/LaborDashboard_17745147878210/LaborOverview/1_rss.png',
-      tags: ['Labor', 'Unemployment Rate'],
-      date: 'Mar 26, 2026',
-    },
-   {
-      title: 'Too Poor to Be Unemployed: Indonesia’s Labor Situation',
-      url: 'https://public.tableau.com/views/TooPoortoBeUnemployedIndonesiasLaborSituation/Dashboard',
-      description: 'Too Poor to Be Unemployed: Indonesia’s Labor Situation #StorytellingWithData',
-      thumbnail: 'https://public.tableau.com/static/images/La/TooPoortoBeUnemployedIndonesiasLaborSituation/Dashboard/1_rss.png',
-      tags: ['Labor', 'Unemployment Rate', 'Informal Employment'],
-      date: 'Jan 1, 2026',
-    },
-    {
-      title: 'Educational Disparities in Indonesia',
-      url: 'https://public.tableau.com/views/EducationalDisparitiesinIndonesia/Dashboard',
-      description: 'Educational Disparities in Indonesia #EduVizzers',
-      thumbnail: 'https://public.tableau.com/static/images/La/EducationalDisparitiesinIndonesia/Dashboard/1_rss.png',
-      tags: ['Literacy Rate'],
-      date: 'Oct 11, 2024',
-    },
-    {
-      title: 'Literacy Gap Between Rural and Urban Areas in Indonesia',
-      url: 'https://public.tableau.com/views/LiteracyGapBetweenRuralandUrbanAreasinIndonesia/Dashboard',
-      description: 'Literacy Gap Between Rural and Urban Areas in Indonesia #EduVizzers',
-      thumbnail: 'https://public.tableau.com/static/images/La/LiteracyGapBetweenRuralandUrbanAreasinIndonesia/Dashboard/1_rss.png',
-      tags: ['Literacy Rate'],
-      date: 'Jun 24, 2024',
-    },
-  ],
-};
-
 
 /* ─────────────────────────────────────────────
     ICONS
@@ -130,16 +93,22 @@ async function fetchMedium() {
 /* ─────────────────────────────────────────────
     TABLEAU
 ───────────────────────────────────────────── */
-function getTableau() {
-  return CONFIG.tableauVizzes.map(v => ({
-    source: 'tableau',
-    title: v.title,
-    description: v.description,
-    url: v.url,
-    date: v.date,
-    tags: v.tags || [],
-    thumbnail: v.thumbnail || null,
-  }));
+async function fetchTableau() {
+  try {
+    const res = await fetch('./tableau.json');
+    const items = await res.json();
+    return items.map(v => ({
+      source: 'tableau',
+      title: v.title,
+      description: v.description,
+      url: v.url,
+      date: v.date,
+      tags: v.tags || [],
+    }));
+  } catch (e) {
+    console.error('Tableau fetch failed', e);
+    return [];
+  }
 }
 
 /* ─────────────────────────────────────────────
