@@ -23,6 +23,14 @@ jobs:
           curl -s "https://navilasm.substack.com/feed" \
             -H "User-Agent: Mozilla/5.0" > substack_feed.xml
 
+      - name: Debug feed content
+        run: |
+          echo "=== Medium feed (first 50 lines) ==="
+          head -50 medium_feed.xml
+          echo ""
+          echo "=== Substack feed (first 50 lines) ==="
+          head -50 substack_feed.xml
+          
           python3 - <<'EOF'
           import xml.etree.ElementTree as ET, json, re
 
