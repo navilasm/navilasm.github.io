@@ -6,6 +6,7 @@ const CONFIG = {
   githubUsername: 'navilasm',
   mediumUsername: '@navilasm',
   tableauUsername: 'navilasm',
+  substackUsername: '@navilasm',
 
   /* Pinned GitHub repos — add slugs you want shown.
       Leave empty [] to show your top 6 public repos. */
@@ -220,9 +221,15 @@ function renderCard(post) {
 
 function render() {
   const grid = document.getElementById('posts-grid');
-  const filtered = activeFilter === 'all'
-    ? allPosts
-    : allPosts.filter(p => p.source === activeFilter);
+
+  let filtered;
+  if (activeFilter === 'all') {
+    filtered = allPosts;
+  } else if (activeFilter === 'medium') {
+    filtered = allPosts.filter(p => p.source === 'medium' || p.source === 'substack');
+  } else {
+    filtered = allPosts.filter(p => p.source === activeFilter);
+  }
 
   if (filtered.length === 0) {
     grid.innerHTML = `<div class="empty-state">No posts found for this filter.</div>`;
