@@ -16,7 +16,7 @@ const CONFIG = {
   //   // { source: 'medium', slug: 'my-article-title' },  // matches post title, case-insensitive
   //   { source: 'tableau', slug: 'Labor Force in Indonesia' },
   // ],
-
+};
 
 /* ─────────────────────────────────────────────
     ICONS
