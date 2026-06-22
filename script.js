@@ -104,6 +104,7 @@ async function fetchTableau() {
       url: v.url,
       date: v.date,
       tags: v.tags || [],
+      thumbnail: v.thumbnail || null,
     }));
   } catch (e) {
     console.error('Tableau fetch failed', e);
