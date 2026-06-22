@@ -18,10 +18,10 @@ jobs:
       - name: Fetch Medium RSS and convert to JSON
         run: |
           curl -s "https://medium.com/feed/@navilasm" \
-            -H "User-Agent: Mozilla/5.0" > feed.xml
+            -H "User-Agent: Mozilla/5.0" > medium_feed.xml
 
           curl -s "https://navilasm.substack.com/feed" \
-            -H "User-Agent: Mozilla/5.0" > feed.xml
+            -H "User-Agent: Mozilla/5.0" > substack_feed.xml
 
           python3 - <<'EOF'
           import xml.etree.ElementTree as ET, json, re
