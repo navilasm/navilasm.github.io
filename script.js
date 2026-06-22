@@ -81,7 +81,7 @@ async function fetchGithub() {
 ───────────────────────────────────────────── */
 async function fetchMedium() {
   try {
-    const res = await fetch('./medium.json');
+    const res = await fetch('./json/medium.json');
     const items = await res.json();
     return items.map(item => ({ source: 'medium', ...item }));
   } catch (e) {
@@ -95,7 +95,7 @@ async function fetchMedium() {
 ───────────────────────────────────────────── */
 async function fetchTableau() {
   try {
-    const res = await fetch('./tableau.json');
+    const res = await fetch('./json/tableau.json');
     const items = await res.json();
     return items.map(v => ({
       source: 'tableau',
