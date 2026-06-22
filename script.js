@@ -227,8 +227,7 @@ async function init() {
   const grid = document.getElementById('posts-grid');
   grid.innerHTML = `<div class="loading-state">Fetching posts…</div>`;
 
-  const [github, medium] = await Promise.all([fetchGithub(), fetchMedium()]);
-  const tableau = getTableau();
+  const [github, medium, tableau] = await Promise.all([fetchGithub(), fetchMedium(), fetchTableau()]);
 
   allPosts = sortByDate([...github, ...medium, ...tableau]);
   render();
