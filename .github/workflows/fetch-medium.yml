@@ -20,7 +20,7 @@ jobs:
           curl -s "https://medium.com/feed/@navilasm" \
             -H "User-Agent: Mozilla/5.0" > medium_feed.xml
 
-          curl -s "https://navilasm.substack.com/feed" \
+          curl -s "https://r.jina.ai/https://navilasm.substack.com/feed" \
             -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" \
             -H "Accept: application/rss+xml, application/xml, text/xml" \
             -H "User-Agent: Mozilla/5.0" > substack_feed.xml
