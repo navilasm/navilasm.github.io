@@ -263,6 +263,11 @@ nav {
     color: #8a4a10;
 }
 
+.source-pill.substack { 
+    background: #fff1e5;
+    color: #8a4a10;
+}
+
 .source-pill.github {
     background: #e6f4ef;
     color: #145232;
