@@ -474,6 +474,11 @@ body.dark {
     height: 15px;
 }
 
+body.dark .source-pill.substack {
+    background: #3d2008;
+    color: #f5b97a;
+}
+
 body.dark .source-pill.medium {
     background: #3d2008;
     color: #f5b97a;
