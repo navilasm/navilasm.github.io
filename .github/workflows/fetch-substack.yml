@@ -64,7 +64,7 @@ jobs:
               'description': desc, 'thumbnail': thumb, 'tags': tags[:4]
             })
 
-          with open('substack.json', 'w', encoding='utf-8') as f:
+          with open('json/substack.json', 'w', encoding='utf-8') as f:
             json.dump(items, f, indent=2, ensure_ascii=False)
           EOF
 
@@ -73,6 +73,6 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git add substack.json
+          git add json/substack.json
           git diff --cached --quiet || git commit -m "chore: refresh Substack articles"
           git push
