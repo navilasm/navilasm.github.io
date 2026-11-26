@@ -1,0 +1,78 @@
+name: fetch-substack-articles
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch Substack RSS and convert to JSON
+        run: |
+          curl -s "https://navilasm.substack.com/feed" \
+            -H "User-Agent: Mozilla/5.0" > feed.xml
+
+          python3 - <<'EOF'
+          import xml.etree.ElementTree as ET, json, re, html as htmlmod
+
+          tree = ET.parse('feed.xml')
+          root = tree.getroot()
+          ns = {'content': 'http://purl.org/rss/1.0/modules/content/'}
+          items = []
+
+          for item in root.findall('./channel/item'):
+            title = item.findtext('title', '').strip()
+            link  = item.findtext('link', '').strip()
+            date  = item.findtext('pubDate', '')
+
+            # subtitle lives in <description>
+            desc = item.findtext('description', '') or ''
+            desc = htmlmod.unescape(re.sub('<[^>]+>', '', desc)).strip()
+
+            body = item.find('content:encoded', ns)
+            body_html = body.text if body is not None and body.text else ''
+
+            # fallback to first <p> if description is empty
+            if not desc:
+              p = re.search(r'<p[^>]*>(.*?)</p>', body_html, re.S)
+              desc = htmlmod.unescape(re.sub('<[^>]+>', '', p.group(1))).strip() if p else ''
+
+            # thumbnail: enclosure first, then first <img>
+            thumb = ''
+            enc = item.find('enclosure')
+            if enc is not None:
+              thumb = enc.get('url', '')
+            if not thumb:
+              m = re.search(r'<img[^>]+src="([^"]+)"', body_html)
+              if m: thumb = m.group(1)
+
+            # tags: RSS categories if present, else placeholder
+            tags = [c.text for c in item.findall('category') if c.text]
+            if not tags:
+              tags = ['data-analysis']
+
+            items.append({
+              'title': title, 'url': link, 'date': date,
+              'description': desc, 'thumbnail': thumb, 'tags': tags[:4]
+            })
+
+          with open('substack.json', 'w', encoding='utf-8') as f:
+            json.dump(items, f, indent=2, ensure_ascii=False)
+          EOF
+
+      - name: Commit substack.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git add substack.json
+          git diff --cached --quiet || git commit -m "chore: refresh Substack articles"
+          git push
